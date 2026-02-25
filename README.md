@@ -1,36 +1,167 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VC Intelligence Interface + Live Enrichment
 
-## Getting Started
+A lightweight VC discovery tool that helps investors discover startups, enrich company data from public sources, and organize opportunities into lists.
 
-First, run the development server:
+This project implements a thesis-driven sourcing workflow inspired by modern VC intelligence platforms.
+
+---
+
+## ✨ Overview
+
+Venture capital sourcing is repetitive and fragmented across multiple tools.
+This application provides a unified workflow:
+
+**Discover → Open profile → Enrich → Analyze → Save**
+
+The system enables fast company discovery while surfacing structured insights extracted from real public websites.
+
+---
+
+## 🚀 Core Features
+
+### 🔎 Company Discovery
+
+* Search and filter companies
+* Sortable results table
+* Pagination support
+* Mock dataset for MVP
+
+### 🧾 Company Profile
+
+* Overview section
+* Notes per company
+* Signals timeline (basic)
+* Save company to lists
+
+### ⭐ Live Enrichment (Core Feature)
+
+* Server-side enrichment via `/api/enrich`
+* Fetches public website content
+* Extracts:
+
+  * Summary
+  * What the company does
+  * Keywords
+  * Derived signals (careers page, blog, docs, etc.)
+  * Sources with timestamps
+* Loading, error, and result states
+* Cached per company for performance
+
+### 📂 Lists & Saved Searches
+
+* Create and manage lists
+* Persist data in localStorage
+* Save and re-run searches
+
+---
+
+## 🏗 Architecture
+
+### Frontend
+
+* Next.js (App Router)
+* React
+* Tailwind CSS
+* Component-driven UI (v0 generated + manual integration)
+
+### Backend (MVP)
+
+* Next.js API Routes
+* `/api/enrich` server endpoint
+* Public web fetch + structured extraction
+
+### State & Persistence
+
+* localStorage for lists, notes, saved searches
+* Client caching for enrichment results
+
+---
+
+## 🔐 Enrichment Design
+
+The enrichment pipeline follows an MVP vertical slice:
+
+1. User clicks **Enrich**
+2. Client calls server endpoint (`/api/enrich`)
+3. Server fetches public website content
+4. Content is parsed into structured fields
+5. Results returned with sources and timestamp
+6. Data cached per company
+
+API keys are kept server-side only.
+
+---
+
+## 🎯 Design Goals
+
+* Thesis-first discovery workflow
+* Explainable insights (sources shown)
+* Fast interactions
+* Production-like UX with minimal scope
+* Safe server-side enrichment
+
+---
+
+## 🧪 Running Locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## ⚙️ Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+Create `.env.local` if enrichment providers require keys:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+EXAMPLE_API_KEY=
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+(For MVP, enrichment can run without external providers.)
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📦 Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Recommended: **Vercel**
+
+Steps:
+
+1. Push repo to GitHub
+2. Import project in Vercel
+3. Add environment variables if needed
+4. Deploy
+
+---
+
+## 🧠 Product Thinking
+
+This project focuses on one complete workflow rather than a full platform:
+
+* Real discovery interface
+* One working enrichment path end-to-end
+* Transparent insights with sources
+* Simple persistence layer
+
+This aligns with an MVP approach used in early product development.
+
+---
+
+## 🔮 Future Improvements
+
+* Thesis scoring engine
+* Background enrichment queue
+* Vector search for similarity
+* CRM / Slack integrations
+* Multi-source enrichment
+* Real database persistence
+
+---
