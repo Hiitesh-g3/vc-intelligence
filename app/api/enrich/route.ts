@@ -204,10 +204,13 @@ export async function POST(req: NextRequest) {
     }
 
     const normalized = normalizeUrl(url)
+    
+    // Check if the frontend specifically asked to bypass the cache
+    const forceRefresh = body.forceRefresh === true
 
-    // Return cached result if available
+    // Return cached result if available AND we aren't forcing a refresh
     const cached = cache.get(normalized)
-    if (cached) {
+    if (cached && !forceRefresh) {
       return NextResponse.json(
         { ...cached, cached: true },
         { status: 200 },
@@ -267,4 +270,3 @@ export async function POST(req: NextRequest) {
     )
   }
 }
-

@@ -121,7 +121,7 @@ function EnrichmentPanel({
   enrichPhase: EnrichmentPhase
   enriched: boolean
   enrichProgress: number
-  onEnrich: () => void
+  onEnrich: (forceRefresh?: boolean) => void
 }) {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [expandedSources, setExpandedSources] = useState(false)
@@ -220,7 +220,7 @@ function EnrichmentPanel({
           ))}
         </div>
         <button
-          onClick={onEnrich}
+          onClick={() => onEnrich(false)}
           className="group mt-5 flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-xs font-medium text-accent-foreground transition-all hover:bg-accent/90 hover:shadow-lg hover:shadow-accent/20"
         >
           <Sparkles className="size-3.5 transition-transform group-hover:rotate-12" />
@@ -337,7 +337,10 @@ function EnrichmentPanel({
             Complete
           </Badge>
         </div>
-        <button className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+        <button 
+          onClick={() => onEnrich(true)}
+          className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+        >
           <RotateCcw className="size-3" />
           Re-run
         </button>
@@ -525,11 +528,11 @@ export function CompanyProfile({
     }))
   }
 
-  const handleEnrich = useCallback(() => {
+  const handleEnrich = useCallback((forceRefresh = false) => {
     if (enrichLoading) return
 
-    // If we already have enrichment cached locally, just reflect that in UI
-    if (liveEnrichment) {
+    // If we already have enrichment cached locally AND we aren't forcing a refresh, just reflect that in UI
+    if (liveEnrichment && !forceRefresh) {
       setEnriched(true)
       setEnrichPhase("complete")
       setEnrichProgress(100)
@@ -562,7 +565,7 @@ export function CompanyProfile({
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ url }),
+          body: JSON.stringify({ url, forceRefresh }),
         })
 
         const data = (await res.json()) as any
@@ -594,13 +597,6 @@ export function CompanyProfile({
     })()
   }, [company.domain, company.id, enrichLoading, liveEnrichment, setEnrichmentByCompany])
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) return
-
-      if (e.key === "Escape") { e.preventDefault(); onBack() }
-      if (e.key === "e" && !e.metaKey && !e.ctrlKey) { e.preventDefault(); handleEnrich() }
   // If we already have live enrichment cached for this company when the profile opens,
   // reflect that in the local UI state.
   useEffect(() => {
@@ -610,6 +606,14 @@ export function CompanyProfile({
       setEnrichProgress(100)
     }
   }, [liveEnrichment])
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) return
+
+      if (e.key === "Escape") { e.preventDefault(); onBack() }
+      if (e.key === "e" && !e.metaKey && !e.ctrlKey) { e.preventDefault(); handleEnrich() }
       if (e.key === "s" && !e.metaKey && !e.ctrlKey) {
         e.preventDefault()
         setSavedToList(true)
@@ -676,7 +680,7 @@ export function CompanyProfile({
         <div className="flex items-center gap-1.5">
           {!enriched && enrichPhase === "idle" && (
             <button
-              onClick={handleEnrich}
+              onClick={() => handleEnrich(false)}
               className="group flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-accent-foreground transition-all hover:bg-accent/90"
             >
               <Sparkles className="size-3 transition-transform group-hover:rotate-12" />
